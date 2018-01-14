@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+# fail fast
+set -eu
+
+# parse args
+BP_DIR=$(cd $(dirname ${0:-}); cd ..; pwd)
+BUILD_DIR=${1:-}
+CACHE_DIR=${2:-}
+
+BP_BIN_DIR=$BP_DIR/.heroku/bin
+BP_PROFILE_DIR=$BP_DIR/.profile.d
+
+BIN_DIR=$BUILD_DIR/.heroku/bin
+PROFILE_DIR=$BUILD_DIR/.profile.d
+
+CACHE_BIN_DIR=$CACHE_DIR/.heroku/bin
+
+mkdir -p $BIN_DIR
+mkdir -p $PROFILE_DIR
+
+mkdir -p $CACHE_BIN_DIR
+
+######### Add BIN_DIR into PATH
+cp $BP_PROFILE_DIR/add_to_path.sh $PROFILE_DIR/add_to_path.sh
+
+######### Install Chisel launcher
+cp $BP_BIN_DIR/with_chisel $BIN_DIR/with_chisel
+chmod +x $BIN_DIR/with_chisel
+
+######### Install chisel
+CHISEL_VERSION=${CHISEL_VERSION:-'1.2.3'}
+if [[ (! -x $(command -v chisel)) || ($CHISEL_VERSION != $(chisel --version)) ]]
+then
+  if [[ ! -f $CACHE_BIN_DIR/chisel-$CHISEL_VERSION ]]
+  then
+    wget --quiet -O - https://github.com/jpillora/chisel/releases/download/$CHISEL_VERSION/chisel_linux_amd64.gz | gzip -d > $CACHE_BIN_DIR/chisel-$CHISEL_VERSION
+  fi
+  cp $CACHE_BIN_DIR/chisel-$CHISEL_VERSION $BIN_DIR/chisel
+  chmod +x $BIN_DIR/chisel
+fi
