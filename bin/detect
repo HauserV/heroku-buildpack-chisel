@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo "Chisel"
+echo "BOINC"
 exit 0
