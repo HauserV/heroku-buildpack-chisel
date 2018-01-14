@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
 
-if (( $# == 0 )); then
-   echo "Illegal number of parameters (requires at least 1)"
-   exit 1
-elif (( $1 < 0 || $1 > 65535 )); then
-   echo "Port number out of range"
-   exit 2
-fi
-
-PORT=$1
-CMD="${@:2}"
+CMD="$@"
 
 # Start chisel server
 if [[ ! -z $CHISEL_KEY ]]; then
